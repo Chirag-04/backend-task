@@ -51,6 +51,9 @@ app.post('/api/postQuestions' , async(req , res)=>{
         const newQuestion =  new demoModel({
             "questionName" : updatedQuestion,
             "answer" : updatedAnswer,
+            "upvote" : 0,
+            "downvote" : 0,
+            "commentCount" : 0,
         });
         console.log(updatedQuestion);
         console.log(updatedAnswer);
@@ -61,7 +64,46 @@ app.post('/api/postQuestions' , async(req , res)=>{
         res.status(500).json({msg : "server error"});
     }
 })
+
+// 
+app.put('/api/upvote' , async(req , res)=>{
+    const id = req.query.id;
+    console.log(id , typeof(id));
+    try{
+        const question =  await demoModel.find({
+            _id : id,
+        })
+        if(!question){
+            return res.status(400).json({msg : "question does not exits"})
+        }
+        // const updateUpvote
+        if(question.upvote == 1){
+            return res.status(400).json({msg : "you cannot increase upvote value more than once"});
+        }
+        const updateQuestion = await demoModel.findByIdAndUpdate(
+            id,
+            {$inc : {upvote : 1}}
+        )
+        console.log(updateQuestion)
+        res.json({msg : "working"});
+    }catch(err){
+        console.log(err);
+        res.status(500).json({msg : "server error"});
+    }
+})
 // listen 
+app.get('/api/data',async(req , res)=>{
+    try{
+        const data=  await demoModel.find({})
+        res.status(200).json(data);
+    }catch{
+        console.log(err);
+        re 
+    }
+})
 app.listen(port ,()=>{
     console.log(`server is running at ${port}`)
 })
+
+// milestone 3
+
